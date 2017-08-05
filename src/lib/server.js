@@ -43,8 +43,10 @@ export default class Server extends EventEmitter
 
         this.wss.on("connection", (socket) =>
         {
-            const ns = url.parse(socket.upgradeReq.url).pathname
+            const urlp = url.parse(socket.upgradeReq.url, true)
+            const ns = urlp.pathname
             socket._id = uuid.v1()
+            socket._user_id = urlp.query.user
 
             // cleanup after the socket gets disconnected
             socket.on("close", () =>
@@ -344,7 +346,7 @@ export default class Server extends EventEmitter
 
                 for (const message of data)
                 {
-                    const response = await this._runMethod(message, socket._id, ns)
+                    const response = await this._runMethod(message, socket._id, ns, socket._user_id)
 
                     if (!response)
                         continue
@@ -358,7 +360,7 @@ export default class Server extends EventEmitter
                 return socket.send(CircularJSON.stringify(responses), msg_options)
             }
 
-            const response = await this._runMethod(data, socket._id, ns)
+            const response = await this._runMethod(data, socket._id, ns, socket._user_id)
 
             if (!response)
                 return
@@ -371,11 +373,12 @@ export default class Server extends EventEmitter
      * Runs a defined RPC method.
      * @private
      * @param {Object} message - a message received
-     * @param {Object} socket_id - user's socket id
+     * @param {String} socket_id - user's socket id
      * @param {String} ns - namespaces identifier
+     * @param {String} user_id - 
      * @return {Object|undefined}
      */
-    async _runMethod(message, socket_id, ns = "/")
+    async _runMethod(message, socket_id, ns = "/", user_id = "")
     {
         if (typeof message !== "object")
             return {
@@ -499,7 +502,7 @@ export default class Server extends EventEmitter
         {
             response = await this.namespaces[ns].rpc_methods[message.method](
                 message.params,
-                {socket_id}
+                {socket_id, user_id}
             )
         }
         catch (error)

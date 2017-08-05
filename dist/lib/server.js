@@ -127,8 +127,10 @@ var Server = function (_EventEmitter) {
         });
 
         _this.wss.on("connection", function (socket) {
-            var ns = _url2.default.parse(socket.upgradeReq.url).pathname;
+            var urlp = _url2.default.parse(socket.upgradeReq.url, true);
+            var ns = urlp.pathname;
             socket._id = _uuid2.default.v1();
+            socket._user_id = urlp.query.user;
 
             // cleanup after the socket gets disconnected
             socket.on("close", function () {
@@ -517,7 +519,7 @@ var Server = function (_EventEmitter) {
 
                                     message = _step3.value;
                                     _context.next = 22;
-                                    return _this4._runMethod(message, socket._id, ns);
+                                    return _this4._runMethod(message, socket._id, ns, socket._user_id);
 
                                 case 22:
                                     _response = _context.sent;
@@ -585,7 +587,7 @@ var Server = function (_EventEmitter) {
 
                                 case 46:
                                     _context.next = 48;
-                                    return _this4._runMethod(data, socket._id, ns);
+                                    return _this4._runMethod(data, socket._id, ns, socket._user_id);
 
                                 case 48:
                                     response = _context.sent;
@@ -618,8 +620,9 @@ var Server = function (_EventEmitter) {
          * Runs a defined RPC method.
          * @private
          * @param {Object} message - a message received
-         * @param {Object} socket_id - user's socket id
+         * @param {String} socket_id - user's socket id
          * @param {String} ns - namespaces identifier
+         * @param {String} user_id - 
          * @return {Object|undefined}
          */
 
@@ -628,6 +631,7 @@ var Server = function (_EventEmitter) {
         value: function () {
             var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(message, socket_id) {
                 var ns = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "/";
+                var user_id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
 
                 var results, event_names, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, name, index, _results, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, _name, _index, response;
 
@@ -908,7 +912,7 @@ var Server = function (_EventEmitter) {
                                 response = null;
                                 _context2.prev = 89;
                                 _context2.next = 92;
-                                return this.namespaces[ns].rpc_methods[message.method](message.params, { socket_id: socket_id });
+                                return this.namespaces[ns].rpc_methods[message.method](message.params, { socket_id: socket_id, user_id: user_id });
 
                             case 92:
                                 response = _context2.sent;
@@ -972,7 +976,7 @@ var Server = function (_EventEmitter) {
                 }, _callee2, this, [[18, 33, 37, 45], [38,, 40, 44], [55, 73, 77, 85], [78,, 80, 84], [89, 95]]);
             }));
 
-            function _runMethod(_x7, _x8) {
+            function _runMethod(_x8, _x9) {
                 return _ref2.apply(this, arguments);
             }
 
