@@ -495,8 +495,13 @@ export default class Server extends EventEmitter
 
         let response = null
 
-        try { response = await this.namespaces[ns].rpc_methods[message.method](message.params) }
-
+        try
+        {
+            response = await this.namespaces[ns].rpc_methods[message.method](
+                message.params,
+                {socket_id}
+            )
+        }
         catch (error)
         {
             if (!message.id)

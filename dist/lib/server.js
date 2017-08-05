@@ -908,7 +908,7 @@ var Server = function (_EventEmitter) {
                                 response = null;
                                 _context2.prev = 89;
                                 _context2.next = 92;
-                                return this.namespaces[ns].rpc_methods[message.method](message.params);
+                                return this.namespaces[ns].rpc_methods[message.method](message.params, { socket_id: socket_id });
 
                             case 92:
                                 response = _context2.sent;

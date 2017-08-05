@@ -44,7 +44,8 @@ var server = new WebSocketServer({
 })
 
 // register an RPC method
-server.register('sum', function(params) {
+server.register('sum', function(params, meta) {
+  // meta.socket_id provides the internal id of the caller's socket
   return params[0] + params[1]
 })
 
@@ -211,7 +212,7 @@ Registers an RPC method.
 
 Parameters:
 * `method` {String}: RPC method name.
-* `handler` {Function}: RPC function that will be fired with a possible parameter object once the method is called.
+* `handler` {Function}: RPC function that will be fired with a possible parameter object once the method is called, along with the `{socket_id:}` meta object.
 * `namespace` {String}: Namespace identifier. Defaults to ```/```.
 
 ### server.event(name[, namespace])
