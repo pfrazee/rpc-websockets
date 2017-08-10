@@ -538,16 +538,18 @@ export default class Server extends EventEmitter
             if (!message.id)
                 return
 
-            if (error instanceof Error)
+            if (error instanceof Error || error.name || error.message)
+            {
                 return {
                     jsonrpc: "2.0",
                     error: {
                         code: -32000,
-                        message: error.name,
+                        message: error.name || "Error",
                         data: error.message
                     },
                     id: message.id
                 }
+            }
 
             return {
                 jsonrpc: "2.0",

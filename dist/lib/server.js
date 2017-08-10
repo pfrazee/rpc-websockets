@@ -217,17 +217,15 @@ var Server = function (_EventEmitter) {
     }, {
         key: "closeNamespace",
         value: function closeNamespace(ns) {
-            console.log(0, ns, this.namespaces);
             (0, _assertArgs2.default)(arguments, {
                 ns: "string"
             });
-            console.log(1);
+
             var namespace = this.namespaces[ns];
             if (namespace) {
-                console.log(2);
                 delete namespace.rpc_methods;
                 delete namespace.events;
-                console.log(3);
+
                 var _iteratorNormalCompletion2 = true;
                 var _didIteratorError2 = false;
                 var _iteratorError2 = undefined;
@@ -253,11 +251,8 @@ var Server = function (_EventEmitter) {
                     }
                 }
 
-                console.log(4);
                 delete this.namespaces[ns];
             }
-
-            console.log(5);
         }
 
         /**
@@ -985,7 +980,7 @@ var Server = function (_EventEmitter) {
                                 return _context2.abrupt("return");
 
                             case 99:
-                                if (!(_context2.t2 instanceof Error)) {
+                                if (!(_context2.t2 instanceof Error || _context2.t2.name || _context2.t2.message)) {
                                     _context2.next = 101;
                                     break;
                                 }
@@ -994,7 +989,7 @@ var Server = function (_EventEmitter) {
                                     jsonrpc: "2.0",
                                     error: {
                                         code: -32000,
-                                        message: _context2.t2.name,
+                                        message: _context2.t2.name || "Error",
                                         data: _context2.t2.message
                                     },
                                     id: message.id
